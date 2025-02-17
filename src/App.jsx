@@ -1,50 +1,39 @@
 import React, { useState } from "react";
 
 const App = () => {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [results, setResults] = useState([]);
 
-  const handleSearch = async () => {
-    if (!query) return;
-    try {
-      const response = await fetch(
-        `https://intelligent-law-backend-3xf5.onrender.com/search?q=${query}`
-      );
-      const data = await response.json();
-      setResults(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    const handleSearch = async () => {
+        const response = await fetch(`https://intelligent-law-backend-3xf5.onrender.com/search?q=${searchTerm}`);
+        const data = await response.json();
+        setResults(data.message ? [] : data);
+    };
 
-  return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h1>Search Common Laws</h1>
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Enter a law keyword..."
-        style={{ padding: "8px", width: "300px" }}
-      />
-      <button onClick={handleSearch} style={{ marginLeft: "10px", padding: "8px" }}>
-        Search
-      </button>
-      <div style={{ marginTop: "20px" }}>
-        {results.length > 0 ? (
-          <ul>
-            {results.map((law) => (
-              <li key={law.id}>
-                <strong>{law.title}</strong>: {law.description}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No results found.</p>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div>
+            <h1>Intelligent Law Search</h1>
+            <input
+                type="text"
+                placeholder="Search Ontario laws..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button onClick={handleSearch}>Search</button>
+            <div>
+                {results.length === 0 ? <p>No results found</p> : (
+                    <ul>
+                        {results.map((law, index) => (
+                            <li key={index}>
+                                <h2>{law.title}</h2>
+                                <p>{law.content}</p>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default App;
